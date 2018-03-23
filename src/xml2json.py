@@ -28,11 +28,10 @@ def doProcess(filename, outPath):
     for line in lines:
         j = dict()
         
-        print("line:", line)
+        #print("line:", line)
         if not line or '' == line: continue
 
         soup = BeautifulSoup(line, 'html.parser')
-        print(soup)
         
         wpt = soup.find("wpt")
         lat = "{:.5f}".format(float(wpt['lat']))
@@ -40,23 +39,20 @@ def doProcess(filename, outPath):
         elevation = wpt.find('ele').string  # [m]
         code = wpt.find('name').string
         
-        cmt =  wpt.find('cmt').string
-        print("cmt:", cmt)
         m = cmtPattern.findall(line)
         if m:
-            print(m)
             name = m[0][0].strip()  # often empy
             callSign = m[0][1]  # gives just 'RADIO'
             if name: callSign = "{} {}".format(name, callSign) # to be in the same format as from vfrManual
             freq = m[0][2]
             
-        print("lat", lat)
-        print("lon", lon)
-        print("elevation", elevation)
-        print("code", code)
-        print("name", name)
-        print("callSign", callSign)
-        print("freq", freq)
+#         print("lat", lat)
+#         print("lon", lon)
+#         print("elevation", elevation)
+#         print("code", code)
+#         print("name", name)
+#         print("callSign", callSign)
+#         print("freq", freq)
         
         j["freq"] = [freq]
         j["coords"] = (float(lat), float(lon))
