@@ -36,7 +36,7 @@ def doProcess(filename, outPath):
         wpt = soup.find("wpt")
         lat = "{:.5f}".format(float(wpt['lat']))
         lon = "{:.5f}".format(float(wpt['lon']))
-        elevation = wpt.find('ele').string  # [m]
+        elevation = int(wpt.find('ele').string)  # [m]
         code = wpt.find('name').string
         
         m = cmtPattern.findall(line)
@@ -54,9 +54,11 @@ def doProcess(filename, outPath):
 #         print("callSign", callSign)
 #         print("freq", freq)
         
-        j["freq"] = [freq]
+        freqList = list()
+        freqList.append((callSign, freq))
+        j["freq"] = freqList 
         j["coords"] = (float(lat), float(lon))
-        j["elev"] = elevation
+        j["elev"] = (int("{:0.0f}".format(elevation * 0.3048).rstrip('0').rstrip('.')), elevation)   # [ft], [m]
         #j["rwy"] = runways
         j["code"] = code
         if name: j["name"] = name
