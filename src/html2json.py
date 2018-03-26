@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 '''
 Created on Mar 17, 2018
+
+Imports data from VFR manual. [http://lis.rlp.cz/vfrmanual/]
 
 @author: ibisek
 '''
@@ -135,6 +138,47 @@ def getNameCode(soup):
     return (name, code)
 
 
+PATTERN_CONTACT_NAME = '<strong>(.+?)<\/strong>'
+PATTERN_CONTACT_PHONE = '([+][0-9]+.[0-9]+.[0-9]+.[0-9]+)'
+PATTERN_CONTACT_MAIL = 'mailto:(.+?)"'
+contactNamePattern = re.compile(PATTERN_CONTACT_NAME, re.IGNORECASE)
+contactPhonePattern = re.compile(PATTERN_CONTACT_PHONE, re.IGNORECASE)
+contactMailPattern = re.compile(PATTERN_CONTACT_MAIL, re.IGNORECASE)
+'''
+@return list of dicts (name, phone, mail)
+'''
+def getContacts(soup):
+    contacts = []
+    
+    tag = soup.find('div', id='aerodrome-kontakty')
+    pTags = tag.find_all("p")
+    for p in pTags:
+        line = p.prettify().replace('\n', '').replace('\t', '').replace('\u00a0', ' ')
+        print("line:", line)
+
+        name = None
+        phone = None
+        mail = None
+        
+        m = contactNamePattern.findall(line)
+        if m: name = m[0].strip()
+            
+        m = contactPhonePattern.findall(line)
+        if m: phone = m[0].strip()
+
+        m = contactMailPattern.findall(line)
+        if m: mail = m[0].strip()
+        
+        #print("contact:\n {}\n {}\n {}".format(name, phone, mail))
+        m = dict()
+        if name: m["name"] = name
+        if phone: m["phone"] = phone
+        if mail: m["mail"] = mail
+        
+        contacts.append(m)
+    
+    return contacts
+
 DIA1 = 'áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ'
 DIA2 = 'acdeeinorstuuyzACDEEINORSTUUYZ'
 def removeDiacritic(s):
@@ -204,6 +248,13 @@ def doProcess(filename, outPath):
     nameAlias = removeDiacritic(name)
     if name != nameAlias:
         j["nameAlias"] = nameAlias
+        
+#     proceduresCz = getProcedures(soup)
+#     j["txt"]["cz"]["procedures"] = proceduresCz
+    #j["txt"]["en"]["procedures"] = proceduresEn
+    
+    contacts = getContacts(soup)
+    j["contacts"] = contacts
     
     s = json.dumps(j, separators=(',',':'))
     
@@ -213,7 +264,7 @@ def doProcess(filename, outPath):
     f.close()
     
 
-TEST = False
+TEST = True
 if __name__ == '__main__':
 
     if not TEST:
@@ -225,7 +276,9 @@ if __name__ == '__main__':
         outPath = sys.argv[2]
     
     else:
-        filename = '../data/lkko_text_cz.html'
+        filename = '../data/lkka_text_cz.html'
+        filename = '../data/lksu_text_cz.html'
+#         filename = '../data/lkmt_text_cz.html'
         outPath = '/tmp/00/'
         
 
