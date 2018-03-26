@@ -138,6 +138,24 @@ def getNameCode(soup):
     return (name, code)
 
 
+'''
+@return: list of texts
+'''
+def getProcedures(soup):
+    procedures = []
+    
+    tag = soup.find('div', id='aerodrome-postupy')
+    pTags = tag.find_all("p")
+    for p in pTags:
+        if 'NIL' in p.text: continue
+        t = p.text.replace('\n', '').replace('\t', '')
+        while t.find('  ') >= 0: t = t.replace('  ', ' ')    # remove long spaces
+        
+        procedures.append(t.strip())
+    
+    return procedures
+
+
 PATTERN_CONTACT_NAME = '<strong>(.+?)<\/strong>'
 PATTERN_CONTACT_PHONE = '([+][0-9]+.[0-9]+.[0-9]+.[0-9]+)'
 PATTERN_CONTACT_MAIL = 'mailto:(.+?)"'
@@ -154,7 +172,7 @@ def getContacts(soup):
     pTags = tag.find_all("p")
     for p in pTags:
         line = p.prettify().replace('\n', '').replace('\t', '').replace('\u00a0', ' ')
-        print("line:", line)
+        #print("line:", line)
 
         name = None
         phone = None
@@ -248,13 +266,14 @@ def doProcess(filename, outPath):
     nameAlias = removeDiacritic(name)
     if name != nameAlias:
         j["nameAlias"] = nameAlias
-        
-#     proceduresCz = getProcedures(soup)
-#     j["txt"]["cz"]["procedures"] = proceduresCz
-    #j["txt"]["en"]["procedures"] = proceduresEn
-    
+
     contacts = getContacts(soup)
     j["contacts"] = contacts
+        
+    procedures = getProcedures(soup)
+    j["txt"] = dict()
+    j["txt"]["cz"] = dict()
+    j["txt"]["cz"]["proc"] = procedures
     
     s = json.dumps(j, separators=(',',':'))
     
@@ -264,7 +283,7 @@ def doProcess(filename, outPath):
     f.close()
     
 
-TEST = True
+TEST = False
 if __name__ == '__main__':
 
     if not TEST:
@@ -277,8 +296,9 @@ if __name__ == '__main__':
     
     else:
         filename = '../data/lkka_text_cz.html'
-        filename = '../data/lksu_text_cz.html'
+#         filename = '../data/lksu_text_cz.html'
 #         filename = '../data/lkmt_text_cz.html'
+#         filename = '../data/lktb_text_cz.html'
         outPath = '/tmp/00/'
         
 
