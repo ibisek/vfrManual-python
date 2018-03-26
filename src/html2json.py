@@ -267,13 +267,13 @@ def doProcess(filename, outPath):
     if name != nameAlias:
         j["nameAlias"] = nameAlias
 
-    contacts = getContacts(soup)
-    j["contacts"] = contacts
-        
     procedures = getProcedures(soup)
     j["txt"] = dict()
     j["txt"]["cz"] = dict()
     j["txt"]["cz"]["proc"] = procedures
+
+    contacts = getContacts(soup)
+    j["txt"]["cz"]["contacts"] = contacts
     
     s = json.dumps(j, separators=(',',':'))
     
