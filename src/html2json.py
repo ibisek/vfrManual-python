@@ -40,10 +40,12 @@ def listFreq(soup):
 
 
 PATTERN_GPS = '^.+?([0-9]+).+?([0-9]+).+?([0-9]+).+?([NS]).+?([0-9]+).+?([0-9]+).+?([0-9]+).+?([EW]+)'
-PATTERN_ELEV = 'ELEV.+?([0-9]+).+?([0-9]+)'
+PATTERN_ELEV_FT = 'ELEV.+?([0-9]+)[ ]*?ft.+br'
+PATTERN_ELEV_M = 'ELEV.+?([0-9]+)[ ]*?m.+br'
 PATTERN_ELEV_CIRCLE = 'Okruh.+?([0-9]+).+?([0-9]+)'
 gpsPattern = re.compile(PATTERN_GPS, re.IGNORECASE)
-elevPattern = re.compile(PATTERN_ELEV, re.IGNORECASE)
+elevFtPattern = re.compile(PATTERN_ELEV_FT, re.IGNORECASE)
+elevMPattern = re.compile(PATTERN_ELEV_M, re.IGNORECASE)
 circleAltPattern = re.compile(PATTERN_ELEV_CIRCLE, re.IGNORECASE)
 '''
 @return (gps (lat, lon), elevation ([ft], [m]), circleAlt ([ft], [m])
@@ -75,13 +77,22 @@ def getGpsElevationCircle(soup):
         if lonSign == 'W': lon = -1 * lon
   
         gps = (lat, lon)
-
     
-    m = elevPattern.findall(line)
+
+    elevFt = None
+    elevM = None    
+    m = elevFtPattern.findall(line)
     if m:
-        elevFt = m[0][0]
-        elevM = m[0][1]
-        elevation = (int(elevFt), int(elevM))
+        elevFt = m[0]
+    m = elevMPattern.findall(line)
+    if m:
+        elevM = m[0]
+    if not elevFt and elevM:
+        elevFt = float(elevM) * 3.2808399
+    if not elevM and elevFt:
+        elevM = float(elevFt) * 0.3048
+    elevation = (int(elevFt), int(elevM))
+    
         
     m = circleAltPattern.findall(line)
     if m:
