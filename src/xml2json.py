@@ -14,8 +14,10 @@ import json
 from bs4 import BeautifulSoup
 
 
-PATTERN_CMT = '<cmt>(.*?)[\[](.+?)\s([0-9.,]+)[\]]<[\/]cmt>'
-cmtPattern = re.compile(PATTERN_CMT, re.IGNORECASE)
+PATTERN_CMT1 = '<cmt>(.*?)[\[](.+?)\s([0-9.,]+)[\]]<[\/]cmt>'
+PATTERN_CMT2 = '<cmt>(.+?)\s([0-9.,]+)<\/cmt>'
+cmtPattern1 = re.compile(PATTERN_CMT1, re.IGNORECASE)
+cmtPattern2 = re.compile(PATTERN_CMT2, re.IGNORECASE)
 
 def doProcess(filename, outPath):
     
@@ -26,8 +28,6 @@ def doProcess(filename, outPath):
     lines = xml.split('\n')
     
     for line in lines:
-        j = dict()
-        
         #print("line:", line)
         if not line or '' == line: continue
 
@@ -39,13 +39,26 @@ def doProcess(filename, outPath):
         elevation = int(wpt.find('ele').string)  # [m]
         code = wpt.find('name').string
         
-        m = cmtPattern.findall(line)
+        name = None
+        callSign = None
+        freq = None
+
+        if code == "LKKOTV" or code == "LKBYST":
+            print("TED!", code)
+            
+        m = cmtPattern1.findall(line)
         if m:
             name = m[0][0].strip()  # often empy
             callSign = m[0][1]  # gives just 'RADIO'
             if name: callSign = "{} {}".format(name, callSign) # to be in the same format as from vfrManual
             freq = m[0][2]
             
+        if not name:
+            m = cmtPattern2.findall(line)
+            if m:
+                callSign = m[0][0]  # gives just 'RADIO'
+                freq = m[0][1]
+                        
 #         print("lat", lat)
 #         print("lon", lon)
 #         print("elevation", elevation)
@@ -54,9 +67,13 @@ def doProcess(filename, outPath):
 #         print("callSign", callSign)
 #         print("freq", freq)
         
+        
         freqList = list()
-        freqList.append((callSign, freq))
-        j["freq"] = freqList 
+        if callSign and freq: freqList.append((callSign, freq))
+        
+        j = dict()
+        
+        if len(freqList) > 0: j["freq"] = freqList 
         j["coords"] = (float(lat), float(lon))
         j["elev"] = (int("{:0.0f}".format(elevation * 0.3048).rstrip('0').rstrip('.')), elevation)   # [ft], [m]
         #j["rwy"] = runways
@@ -75,7 +92,7 @@ TEST = False
 if __name__ == '__main__':
 
     if TEST:
-        filename = '../data/ulonly.xml'
+        filename = '/tmp/00/ulonly.xml'
         outPath = '/tmp/00/'
              
     else:
