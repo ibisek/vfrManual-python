@@ -43,9 +43,6 @@ def doProcess(filename, outPath):
         callSign = None
         freq = None
 
-        if code == "LKKOTV" or code == "LKBYST":
-            print("TED!", code)
-            
         m = cmtPattern1.findall(line)
         if m:
             name = m[0][0].strip()  # often empy
@@ -75,7 +72,7 @@ def doProcess(filename, outPath):
         
         if len(freqList) > 0: j["freq"] = freqList 
         j["coords"] = (float(lat), float(lon))
-        j["elev"] = (int("{:0.0f}".format(elevation * 3.2808399).rstrip('0').rstrip('.')), elevation)   # [ft], [m]
+        j["elev"] = (int("{:.0f}".format(elevation * 3.2808399)), elevation)   # [ft], [m]
         #j["rwy"] = runways
         j["code"] = code
         if name: j["name"] = name
