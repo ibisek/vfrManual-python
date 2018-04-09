@@ -75,7 +75,7 @@ def doProcess(filename, outPath):
         
         if len(freqList) > 0: j["freq"] = freqList 
         j["coords"] = (float(lat), float(lon))
-        j["elev"] = (int("{:0.0f}".format(elevation * 0.3048).rstrip('0').rstrip('.')), elevation)   # [ft], [m]
+        j["elev"] = (int("{:0.0f}".format(elevation * 3.2808399).rstrip('0').rstrip('.')), elevation)   # [ft], [m]
         #j["rwy"] = runways
         j["code"] = code
         if name: j["name"] = name
