@@ -174,6 +174,9 @@ def doProcess(filename, workingDir, regionCode='LK'):
                     j['freq'] = freq
                 else:
                     j['freq'] = [("{} {}".format(af[0], f[0]), f[1]) for f in freq]
+            else:
+                # TODO here we could apply a default freq & callsign for UL strips based on the regionCode
+                continue    # do not create file without a frequency info
             
             j['rwy'] = rwys
             
@@ -189,9 +192,9 @@ TEST = True
 if __name__ == '__main__':
 
     if TEST:
-        regionCode = 'LK'
-        filename = "/home/ibisek/wqz/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
-        #filename = "/home/jaja/data/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
+        regionCode = 'EP'
+        #filename = "/home/ibisek/wqz/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
+        filename = "/home/jaja/data/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
         workingDir = '/tmp/00'
               
     else:
