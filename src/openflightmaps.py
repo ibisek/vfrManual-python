@@ -49,8 +49,19 @@ def getAirfields(soup, codePrefix):
         if not code.startswith(codePrefix): continue
         
         lat = record.find('geolat').text
+        latLetter = lat[len(lat)-1]
+        latSign = 1 if latLetter == "N" else -1
+        lat = latSign * float(lat[:len(lat)-1]) 
+        lat = "{:.5f}".format(lat)
+        
         lon = record.find('geolong').text
-        elevFt = record.find('valelev').text
+        lonLetter = lon[len(lon)-1]
+        lonSign = 1 if lonLetter == "E" else -1
+        lon = lonSign * float(lon[:len(lon)-1]) 
+        lon= "{:.5f}".format(lon)
+        
+        elevFt = int(record.find('valelev').text)
+        elevM = int(float(elevFt) * 0.3048)
         
         names = record.find_all('txtname')
         
@@ -60,7 +71,7 @@ def getAirfields(soup, codePrefix):
         if code not in airfields:
             airfields[code] = list()
          
-        airfields[code].append((name, lat, lon, elevFt))
+        airfields[code].append((name, lat, lon, (elevFt, elevM)))
          
     return airfields
 
@@ -82,7 +93,9 @@ def _getUniIds(soup, codePrefix):
          
     return uniIds
 
-
+'''
+@return dict (key = code) of lists of tuples (callSign, freq)
+'''
 def getFrequencies(soup, codePrefix):
     uniIds = _getUniIds(soup, codePrefix)
     
@@ -103,7 +116,7 @@ def getFrequencies(soup, codePrefix):
             if code not in frequencies:
                 frequencies[code] = list()
               
-            frequencies[code].append((freq, callSign))
+            frequencies[code].append((callSign, freq))
           
     return frequencies
 
