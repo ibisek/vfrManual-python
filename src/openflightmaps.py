@@ -64,6 +64,8 @@ def getAirfields(soup, regionCode):
         # there are multiple (typically two) txt name fields - the shorter one contains name of the place:
         name = min([name.text for name in names], key=len)
         
+        # TODO parse airfield's contact information from the long txtname field 
+        
         airfields[code] = (name, lat, lon, (elevFt, elevM))
          
     return airfields
@@ -123,15 +125,14 @@ def doProcess(filename, workingDir, regionCode='LK'):
     soup = BeautifulSoup(text, 'html.parser')
     
     runways = getRunways(soup, regionCode)
-    print("runways:", runways)
+    #print("runways:", runways)
     
     airfields = getAirfields(soup, regionCode)
-    print("airfields:", airfields)
+    #print("airfields:", airfields)
     
     frequencies = getFrequencies(soup, regionCode)
-    print("frequencies:", frequencies)
+    #print("frequencies:", frequencies)
     
-#     sys.exit(0)
     
     for code in airfields.keys():
         af = airfields[code]              # (name, lat, lon, (elevFt, elevM))
@@ -148,11 +149,15 @@ def doProcess(filename, workingDir, regionCode='LK'):
             j = json.loads(jsonStr)
 
             # add fields which are missing:
+            if 'name' not in j:
+                j['name'] = af[0]
+                j['alias'] = removeDiacritic(af[0])
+
             if 'rwy' not in j:
                 j['rwy'] = rwys
             
-            if 'elev' not in j:
-                j['elev'] = af[3]
+            #if 'elev' not in j:
+            j['elev'] = af[3]   #XXX force overwrite as some UL strips have wrong values
         
         
         except FileNotFoundError:
@@ -179,9 +184,9 @@ TEST = True
 if __name__ == '__main__':
 
     if TEST:
-        filename = '/home/ibisek/wqz/download/vfrManual/openflightmaps.org/aixm_lk.xml'
-        workingDir = '/tmp/00'
         regionCode = 'LK'
+        filename = "/home/ibisek/wqz/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
+        workingDir = '/tmp/00'
               
     else:
         if len(sys.argv) != 3:
