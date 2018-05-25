@@ -56,7 +56,7 @@ def getAirfields(soup, regionCode):
         lon = lonSign * float(lon[:len(lon)-1]) 
         lon= "{:.5f}".format(lon)
         
-        elevFt = int(record.find('valelev').text)
+        elevFt = int(float(record.find('valelev').text))
         elevM = int(float(elevFt) * 0.3048)
         
         names = record.find_all('txtname')
@@ -135,9 +135,9 @@ def doProcess(filename, workingDir, regionCode='LK'):
     
     
     for code in airfields.keys():
-        af = airfields[code]              # (name, lat, lon, (elevFt, elevM))
-        freq = frequencies[code]    # (callSign, freq)
-        rwys = runways[code]        # [(directions, dimensions)]
+        af = airfields[code]                                        # (name, lat, lon, (elevFt, elevM))
+        freq = frequencies[code] if code in frequencies else None   # (callSign, freq)
+        rwys = runways[code]                                        # [(directions, dimensions)]
         
         #try to locate existing file or start new if not present
         filename = "{}/{}.json".format(workingDir, code.lower())
@@ -169,7 +169,12 @@ def doProcess(filename, workingDir, regionCode='LK'):
             j['coords'] = (af[1], af[2]) 
             j['elev'] = af[3]
             
-            j['freq'] = [("{} {}".format(af[0], f[0]), f[1]) for f in freq]
+            if freq:
+                if len(freq) > 1:
+                    j['freq'] = freq
+                else:
+                    j['freq'] = [("{} {}".format(af[0], f[0]), f[1]) for f in freq]
+            
             j['rwy'] = rwys
             
         
@@ -186,6 +191,7 @@ if __name__ == '__main__':
     if TEST:
         regionCode = 'LK'
         filename = "/home/ibisek/wqz/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
+        #filename = "/home/jaja/data/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
         workingDir = '/tmp/00'
               
     else:
