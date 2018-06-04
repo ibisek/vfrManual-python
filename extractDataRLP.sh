@@ -1,9 +1,9 @@
 #!/bin/bash
 
-srcDir='/home/ibisek/download/vfrManual/unpacked/actual'
-outDir='/home/ibisek/wqz/prog/android/vfrManual/app/src/main/assets'
+#srcDir='/home/ibisek/download/vfrManual/unpacked/actual'
+srcDir='/tmp/00/actual'
 
-#srcDir='/tmp/00/2'
+outDir='/home/ibisek/wqz/prog/android/vfrManual/app/src/main/assets'
 #outDir='/tmp/00/b'
 
 lang='cz'

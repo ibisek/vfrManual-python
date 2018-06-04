@@ -188,24 +188,23 @@ def doProcess(filename, workingDir, regionCode='LK'):
         f.close()
     
 
-TEST = True    
+TEST = False   
 if __name__ == '__main__':
 
     if TEST:
-        regionCode = 'EP'
-        #filename = "/home/ibisek/wqz/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
-        filename = "/home/jaja/data/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
+        regionCode = 'LZ'   
+        filename = "/home/ibisek/wqz/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
+        #filename = "/home/jaja/data/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
         workingDir = '/tmp/00'
               
     else:
-        if len(sys.argv) != 3:
-            print("Usage: openflightmaps.py <aixm-filename> <outPath> <regionCode>\n where\n  filename is from the embedded folder and\n  regionCode is LK/LZ/..")
+        if len(sys.argv) != 4:
+            print("Usage: openflightmaps.py <regionCode> <aixm-filename> <outPath> \n where\n  regionCode is LK/LZ/..\n filename is from the embedded folder")
             sys.exit(0)
       
-        filename = sys.argv[1]
-        workingDir = sys.argv[2]
-        regionCode = sys.argv[3]
-
+        regionCode = sys.argv[1]
+        filename = sys.argv[2]
+        workingDir = sys.argv[3]
  
     doProcess(filename, workingDir, regionCode)
     
