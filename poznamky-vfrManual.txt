@@ -1,3 +1,9 @@
 
 http://lis.rlp.cz/vfrmanual/
 
+
+Data extraction scripts to be executed in the following order:
+	(1) extractData.sh	(calls html2json.py)
+	(2) openflightmaps.py
+	(3) xml2json.py
+
