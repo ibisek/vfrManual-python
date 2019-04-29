@@ -2,8 +2,19 @@
 http://lis.rlp.cz/vfrmanual/
 
 
+
+
+(1) Set actual URLs in refreshData.sh
+(2) Execute	refreshData.sh
+
+Done! :)
+
+
+
+-- OLD --
+
 Data extraction scripts to be executed in the following order:
-	(1) extractData.sh	(calls html2json.py)
+	(1) extractDataRLP.sh	(calls html2json.py)
 	(2) openflightmaps.py
-	(3) xml2json.py
+	(3) extractDataD:.sh	(calls xml2json.py)
 
