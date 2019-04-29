@@ -8,7 +8,7 @@ mkdir -p $TMPDIR
 
 ## lis.rlp.cz data:
 function dataRLP {
-wget -P $TMPDIR http://lis.rlp.cz/vfrmanual/actual/20180524_1.zip
+wget -P $TMPDIR http://lis.rlp.cz/vfrmanual/actual/20190425_1.zip
 cd $TMPDIR
 unzip *.zip
 cd -
@@ -19,7 +19,7 @@ rm -rf $TMPDIR/*
 
 ## Databaze letist data:
 function dataDL {
-wget -P $TMPDIR http://www.aerobaze.cz/gps/DatabazeLetistGPS_24may18.zip
+wget -P $TMPDIR http://www.aerobaze.cz/gps/DatabazeLetistGPS_28mar19.zip
 ./extractDataDL.sh
 rm -rf $TMPDIR/*
 }
