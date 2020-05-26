@@ -198,6 +198,7 @@ def doProcess(filename, workingDir, regionCode='LK'):
 
             j['rwy'] = rwys
 
+        print(f"Writing to {filename}")
         # save the json:
         s = json.dumps(j, separators=(',', ':'))
         f = open(filename, 'w')
@@ -205,7 +206,7 @@ def doProcess(filename, workingDir, regionCode='LK'):
         f.close()
 
 
-TEST = True
+TEST = False
 if __name__ == '__main__':
 
     if TEST:
