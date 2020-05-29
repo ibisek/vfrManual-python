@@ -69,9 +69,12 @@ def getAirfields(soup, regionCode):
             elevM = int(float(elevFt) * 0.3048)
 
         names = record.find_all('txtname')
+        names = [n.text for n in names]
 
         # there are multiple (typically two) txt name fields - the shorter one contains name of the place:
-        name = min([name.text for name in names], key=len)
+        if 'PLACEHOLDER' in names:
+            names.remove('PLACEHOLDER')
+        name = min([name for name in names], key=len)
 
         # TODO parse airfield's contact information from the long txtname field 
 
@@ -92,7 +95,14 @@ def _getUniIds(soup, regionCode):
 
     for record in records:
         code = record.find('codeid')
-        if not code or not code.text.startswith(regionCode):
+
+        if not code:
+            ahpUid = record.find('ahpuid')
+            if ahpUid:
+                code = ahpUid.find('codeid')
+
+        # if not code or not code.text.startswith(regionCode):
+        if not code:
             continue
 
         uniId = record.uniuid['mid']
@@ -121,11 +131,11 @@ def getFrequencies(soup, regionCode):
         freq = freq.text
 
         uniId = record.find('uniuid')['mid']
-
         if uniId in uniIds:
             code = uniIds[uniId]
 
             callSign = record.find('txtcallsign').text
+            callSign = callSign[:callSign.find('(')].strip()
             callSign = callSign[callSign.rfind(' ') + 1:]  # just the last item.. 'RADIO' / 'TOWER' / etc.
 
             if code not in frequencies:
@@ -215,7 +225,7 @@ if __name__ == '__main__':
         # filename = "/home/jaja/data/download/vfrManual/openflightmaps.org/aixm_{}.xml".format(regionCode.lower())
         # filename = "/home/jaja/data/download/vfrManual/openflightmaps.org/ofmx/ofmx_{}.ofmx".format(regionCode.lower())
 
-        regionCode = 'EP'
+        regionCode = 'EB'
         filename = "/home/jaja/data/download/vfrManual/openflightmaps.org/ofmx/ofmx_{}.ofmx".format(regionCode.lower())
 
         workingDir = '/tmp/00'
@@ -229,6 +239,7 @@ if __name__ == '__main__':
         regionCode = sys.argv[1]
         filename = sys.argv[2]
         workingDir = sys.argv[3]
+
 
     doProcess(filename, workingDir, regionCode)
 
