@@ -182,8 +182,6 @@ def getFuel(soup):
         if 'Palivo' in str(div):
             fuelStr = div.text.strip()
 
-        print(div)
-
     return (fuelStr, oilStr)
 
 
