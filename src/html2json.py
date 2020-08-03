@@ -166,6 +166,26 @@ def getProcedures(soup):
     
     return procedures
 
+'''
+@return tuple with texts for (fuel, oil)
+'''
+def getFuel(soup):
+    fuelStr = None
+    oilStr = None
+
+    tag = soup.find('div', id='aerodrome-sluzby')
+    divs = tag.find_all('div')
+    for div in divs:
+        if 'Olej' in str(div):
+            oilStr = div.text.strip()
+            continue
+        if 'Palivo' in str(div):
+            fuelStr = div.text.strip()
+
+        print(div)
+
+    return (fuelStr, oilStr)
+
 
 PATTERN_CONTACT_NAME = '<strong>(.+?)<\/strong>'
 PATTERN_CONTACT_PHONE = '([+][0-9]+.[0-9]+.[0-9]+.[0-9]+)'
@@ -285,8 +305,14 @@ def doProcess(filename, outPath):
 
     contacts = getContacts(soup)
     j["txt"]["cz"]["contacts"] = contacts
-    
-    s = json.dumps(j, separators=(',',':'))
+
+    (fuel, oil) = getFuel(soup)
+    if fuel:
+        j['fuel'] = fuel
+    if oil:
+        j['oil'] = oil
+
+    s = json.dumps(j, separators=(',', ':'))
     
     outFilename = "{}/{}.json".format(outPath, code.lower())
     f = open(outFilename, 'w')
@@ -294,7 +320,7 @@ def doProcess(filename, outPath):
     f.close()
     
 
-TEST = False
+TEST = True
 if __name__ == '__main__':
 
     if not TEST:
@@ -306,12 +332,12 @@ if __name__ == '__main__':
         outPath = sys.argv[2]
     
     else:
-        filename = '../data/lkka_text_cz.html'
-#         filename = '../data/lksu_text_cz.html'
-#         filename = '../data/lkmt_text_cz.html'
-#         filename = '../data/lktb_text_cz.html'
+        # filename = '../data/lkka_text_cz.html'
+        # filename = '../data/lksu_text_cz.html'
+        # filename = '../data/lkmt_text_cz.html'
+        # filename = '../data/lktb_text_cz.html'
+        filename = '/home/ibisek/data/download/vfrManual/00/actual/lkka_text_cz.html'
         outPath = '/tmp/00/'
-        
 
     doProcess(filename, outPath)
     
